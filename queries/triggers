@@ -1,0 +1,32 @@
+DELIMITER $$
+
+CREATE TRIGGER after_purchase_order_insert
+AFTER INSERT ON purchase_order
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (action, table_name, record_id, action_time)
+    VALUES ('INSERT', 'purchase_order', NEW.purchase_order_id, NOW());
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER before_inventory_transaction_insert
+BEFORE INSERT ON inventory_transaction
+FOR EACH ROW
+BEGIN
+    DECLARE current_qty INT;
+    
+    SELECT quantity INTO current_qty
+    FROM inventory
+    WHERE product_id = NEW.product_id;
+    
+    IF current_qty < NEW.quantity THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Not enough stock for this transaction';
+    END IF;
+END$$
+
+DELIMITER ;
