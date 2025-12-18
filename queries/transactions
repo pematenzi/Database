@@ -1,0 +1,21 @@
+START TRANSACTION;
+
+INSERT
+	INTO
+	purchase_order (purchase_order_id,
+	supplier_id,
+	order_date)
+VALUES (1003,
+101,
+'2025-12-18');
+
+INSERT
+	INTO
+	inventory_transaction (transaction_id,
+	purchase_order_id,
+	quantity)
+VALUES (3001,
+1003,
+100);
+
+COMMIT;
