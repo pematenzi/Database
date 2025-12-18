@@ -1,0 +1,57 @@
+CREATE TABLE category (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(150) NOT NULL,
+    category_description TEXT
+);
+
+CREATE TABLE employee (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_name VARCHAR(200) NOT NULL,
+    phone_number VARCHAR(20),
+    email_address VARCHAR(150),
+    address VARCHAR(255)
+);
+
+CREATE TABLE supplier (
+    supplier_id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_name VARCHAR(200) NOT NULL,
+    supplier_phone VARCHAR(20),
+    supplier_email VARCHAR(150),
+    supplier_city VARCHAR(100),
+    payment_terms VARCHAR(100)
+);
+
+CREATE TABLE product (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(200) NOT NULL,
+    product_code VARCHAR(100) UNIQUE,
+    unit_cost DECIMAL(10, 2) NOT NULL,
+    quantity_in_stock INT DEFAULT 0,
+    reorder_level INT DEFAULT 10,
+    category_id INT,
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
+);
+
+CREATE TABLE purchase_order (
+    purchase_order_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_date DATE NOT NULL,
+    expected_date DATE,
+    total_amount DECIMAL(12, 2),
+    supplier_id INT,
+    employee_id INT,
+    FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id),
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
+);
+
+CREATE TABLE inventory_transaction (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    transaction_type ENUM('IN', 'OUT', 'DAMAGED', 'ADJUSTMENT') NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10, 2),
+    notes VARCHAR(255),
+    product_id INT,
+    purchase_order_id INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id),
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id)
+);
